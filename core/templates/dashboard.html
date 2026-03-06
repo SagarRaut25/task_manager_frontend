@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>My Task Dashboard</h2>
+<ul>
+    {% for task in tasks %}
+        <li>{{ task.title }} - {% if task.completed %}✅{% else %}⏳{% endif %}</li>
+    {% empty %}
+        <li>No tasks found. Create one!</li>
+    {% endfor %}
+</ul>
+{% endblock %}
