@@ -1,11 +1,82 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h2>My Task Dashboard</h2>
-<ul>
-    {% for task in tasks %}
-        <li>{{ task.title }} - {% if task.completed %}✅{% else %}⏳{% endif %}</li>
-    {% empty %}
-        <li>No tasks found. Create one!</li>
-    {% endfor %}
-</ul>
+<div class="row">
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>My Tasks</h2>
+            <span class="badge bg-primary fs-6">
+                Connected as: {{ request.session.username }}
+            </span>
+        </div>
+
+        <div class="list-group shadow-sm">
+            {% for task in tasks %}
+                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3">
+                    <div class="flex-grow-1">
+                        <h5 class="mb-1 {% if task.completed %}text-decoration-line-through text-muted{% endif %}">
+                            {{ task.title }}
+                        </h5>
+                        <p class="mb-1 text-secondary small">{{ task.description|default:"No description provided." }}</p>
+                        <small class="text-muted">Added: {{ task.created|slice:":10" }}</small>
+                    </div>
+                    
+                    <div class="ms-3 d-flex gap-2">
+                        <a href="{% url 'toggle_task' task.id %}" 
+                           class="btn btn-sm {% if task.completed %}btn-outline-secondary{% else %}btn-success{% endif %}">
+                            {% if task.completed %}Undo{% else %}Done{% endif %}
+                        </a>
+                        
+                        <a href="{% url 'delete_task' task.id %}" 
+                           class="btn btn-sm btn-danger" 
+                           onclick="return confirm('Are you sure you want to delete this task?')">
+                            Delete
+                        </a>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="list-group-item text-center py-5 text-muted">
+                    <p class="mb-0">No tasks found in the cloud. Time to get productive!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <h5 class="card-title mb-0">Add New Task</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ form.title.label_tag }}
+                        {{ form.title }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.description.label_tag }}
+                        {{ form.description }}
+                    </div>
+                    <div class="form-check mb-3">
+                        {{ form.completed }}
+                        <label class="form-check-label" for="{{ form.completed.id_for_label }}">
+                            Mark as already completed?
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Save to Cloud</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mt-4 bg-light border-0 shadow-sm">
+            <div class="card-body text-center">
+                <p class="mb-0 text-muted">
+                    This frontend is securely communicating with the 
+                    <strong>Django API</strong> on port 8000.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

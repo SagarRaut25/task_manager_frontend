@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = 'django-insecure-frontend-key-change-this'
+SECRET_KEY = 'django-insecure-frontend-key'
 DEBUG = True
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
@@ -11,7 +11,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions', # Crucial for storing the API Token
+    'django.contrib.sessions', # Stores our Login Token
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
@@ -19,7 +19,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware', # Critical for Login
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -45,9 +45,7 @@ TEMPLATES = [
     },
 ]
 
-# NO DATABASES SECTION NEEDED - We use the Backend API instead!
-
-WSGI_APPLICATION = 'config.wsgi.application'
+# NO DATABASE CONFIGURATION NEEDED HERE
 
 STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
