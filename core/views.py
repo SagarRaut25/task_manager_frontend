@@ -120,3 +120,32 @@ def toggle_task(request, pk):
         messages.error(request, "Failed to update task.")
         
     return redirect('dashboard')
+
+def edit_task(request, pk):
+    token = request.session.get('auth_token')
+    if not token: return redirect('login')
+    headers = {'Authorization': f'Token {token}'}
+
+    # 1. Fetch current task data from Backend to pre-fill the form
+    response = requests.get(f"{API_BASE_URL}tasks/{pk}/", headers=headers)
+    if response.status_code != 200:
+        messages.error(request, "Task not found.")
+        return redirect('dashboard')
+    
+    task_data = response.json()
+
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            # 2. Send updated data back to Backend using PUT
+            update_res = requests.put(f"{API_BASE_URL}tasks/{pk}/", json=form.cleaned_data, headers=headers)
+            if update_res.status_code == 200:
+                messages.success(request, "Task updated successfully!")
+                return redirect('dashboard')
+            else:
+                messages.error(request, "Failed to update task.")
+    else:
+        # Pre-fill form with existing data
+        form = TaskForm(initial=task_data)
+
+    return render(request, 'edit_task.html', {'form': form, 'task': task_data})
